@@ -13,3 +13,10 @@ Select the *Throughput Analyzer* tool from your inventory and drag over an area 
 A window will appear listing each entity with its maximum and current throughput.
 
 The mod is in an early stage and will evolve as described in the repository `plan.md`.
+
+## Verbose Logging
+
+You can toggle verbose logging from *Settings → Mod Settings → Startup* (or
+*Runtime* depending on Factorio version). Enable **Throughput Analyzer verbose**
+to print detailed debug messages to `factorio-current.log`. Disable it when you
+no longer need the extra output.

@@ -2,7 +2,30 @@
 
 local ANALYZER_NAME = "throughput-analyzer-tool"
 
+-- Verbose debug flag controlled by a runtime setting
+local verbose = false
+
+local function update_verbose()
+  if settings and settings.global then
+    local setting = settings.global["throughput-analyzer-verbose"]
+    verbose = setting and setting.value or false
+  end
+end
+
+local function debug_log(msg)
+  if verbose then log("[TA] " .. msg) end
+end
+
+script.on_init(update_verbose)
+script.on_configuration_changed(update_verbose)
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
+  if event.setting == "throughput-analyzer-verbose" then
+    update_verbose()
+  end
+end)
+
 local function analyze_entity(entity)
+  debug_log("Analyzing entity " .. entity.name .. " (" .. entity.type .. ")")
   local result = {
     name = entity.localised_name or entity.name,
     type = entity.type,
@@ -43,10 +66,12 @@ local function analyze_entity(entity)
     local cur = (entity.held_stack and entity.held_stack.valid_for_read) and rot or 0
     result.current = string.format("%.2f", cur)
   end
+  debug_log(string.format("Result for %s: max=%s current=%s", result.name, result.max, result.current))
   return result
 end
 
 local function show_gui(player, results)
+  debug_log("Showing GUI to " .. player.name .. " with " .. #results .. " entries")
   if player.gui.screen.throughput_analyzer_frame then
     player.gui.screen.throughput_analyzer_frame.destroy()
   end
@@ -76,12 +101,14 @@ local function show_gui(player, results)
 end
 
 local function analyze_selection(event)
+  debug_log("Analyzing selection of " .. #event.entities .. " entities")
   local results = {}
   for _, entity in pairs(event.entities) do
     table.insert(results, analyze_entity(entity))
   end
   local player = game.players[event.player_index]
   show_gui(player, results)
+  debug_log("Analysis complete")
 end
 
 script.on_event(defines.events.on_player_selected_area, function(event)
@@ -94,6 +121,7 @@ script.on_event(defines.events.on_gui_click, function(event)
   if event.element and event.element.valid and event.element.name == "throughput_analyzer_close" then
     local frame = event.element.parent
     if frame and frame.valid then
+      debug_log("Closing analyzer window for player " .. game.players[event.player_index].name)
       frame.destroy()
     end
   end

@@ -10,3 +10,9 @@ The mod itself lives in the `throughput-analyzer` directory and can be copied di
 - `plan.md` – high level development roadmap
 
 The project is released under the MIT License found in `LICENSE`.
+
+## Debug Logging
+
+Verbose debug messages can be enabled from the in-game mod settings. Enable the
+**Throughput Analyzer verbose** option to log additional information to the
+`factorio-current.log` file. Leave it disabled for normal play.
