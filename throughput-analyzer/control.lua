@@ -55,8 +55,8 @@ local function analyze_entity(entity)
     current = ""
   }
 
-  if entity.get_recipe and entity.get_recipe() then
-    local recipe = entity.get_recipe()
+  local has_recipe, recipe = pcall(entity.get_recipe, entity)
+  if has_recipe and recipe then
     local crafts_per_sec = entity.crafting_speed / recipe.energy
     local max_outputs = {}
     local current_outputs = {}
