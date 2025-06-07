@@ -4,5 +4,6 @@
   "title": "Throughput Analyzer",
   "author": "OpenAI",
   "factorio_version": "2.0",
-  "description": "Analyze throughput of machines, belts and inserters in a selected area."
+  "description": "Analyze throughput of machines, belts and inserters in a selected area.",
+  "settings": "settings.lua"
 }
