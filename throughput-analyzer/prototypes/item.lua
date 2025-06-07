@@ -1,3 +1,4 @@
+-- luacheck: globals data
 -- Use a base game icon to avoid shipping a binary placeholder
 local icon_path = "__base__/graphics/icons/blueprint.png"
 
