@@ -9,7 +9,6 @@ data:extend({
     name = "throughput-analyzer-tool",
     icon = icon_path,
     icon_size = 64,
-    flags = {"goes-to-main-inventory"},
     subgroup = "tool",
     order = "c[automated-construction]-a[analyzer]",
     stack_size = 1,
