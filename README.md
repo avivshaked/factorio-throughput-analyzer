@@ -9,6 +9,20 @@ The mod itself lives in the `throughput-analyzer` directory and can be copied di
 - `throughput-analyzer/` – the mod files loaded by Factorio
 - `plan.md` – high level development roadmap
 
+## Deployment Helper
+
+The `deploy_mod.py` script automates installing the mod into your local
+Factorio `mods` folder. Provide a new version number and it will update
+`throughput-analyzer/info.json`, remove any old copies of the mod and copy the
+folder with the version appended to its name. Example:
+
+```bash
+python deploy_mod.py 0.1.1
+```
+
+Use `--mods-dir` to override the default path of
+`C:\Users\shake\AppData\Roaming\Factorio\mods`.
+
 The project is released under the MIT License found in `LICENSE`.
 
 ## Debug Logging
