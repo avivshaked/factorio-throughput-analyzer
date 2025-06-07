@@ -20,11 +20,19 @@ end
 
 local function safe_string(val)
   if type(val) == "table" then
-    if game and game.table_to_json then
-      return game.table_to_json(val)
-    else
-      return "[table]"
+    if game then
+      local ok, result = pcall(function()
+        if game.table_to_json then
+          return game.table_to_json(val)
+        elseif game.table_to_string then
+          return game.table_to_string(val)
+        end
+      end)
+      if ok and result then
+        return result
+      end
     end
+    return "[table]"
   end
   return tostring(val)
 end
