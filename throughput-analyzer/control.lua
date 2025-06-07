@@ -16,8 +16,30 @@ local function debug_log(msg)
   if verbose then log("[TA] " .. msg) end
 end
 
-script.on_init(update_verbose)
-script.on_configuration_changed(update_verbose)
+local function give_tool(player)
+  if player and player.valid then
+    local inv = player.get_main_inventory()
+    if inv and not inv.find_item_stack(ANALYZER_NAME) then
+      inv.insert{name = ANALYZER_NAME, count = 1}
+    end
+  end
+end
+
+local function give_tool_all_players()
+  for _, p in pairs(game.players) do
+    give_tool(p)
+  end
+end
+
+script.on_init(function()
+  update_verbose()
+  give_tool_all_players()
+end)
+
+script.on_configuration_changed(function()
+  update_verbose()
+  give_tool_all_players()
+end)
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   if event.setting == "throughput-analyzer-verbose" then
     update_verbose()
@@ -33,8 +55,8 @@ local function analyze_entity(entity)
     current = ""
   }
 
-  if entity.get_recipe and entity.get_recipe() then
-    local recipe = entity.get_recipe()
+  local has_recipe, recipe = pcall(entity.get_recipe, entity)
+  if has_recipe and recipe then
     local crafts_per_sec = entity.crafting_speed / recipe.energy
     local max_outputs = {}
     local current_outputs = {}
@@ -125,4 +147,9 @@ script.on_event(defines.events.on_gui_click, function(event)
       frame.destroy()
     end
   end
+end)
+
+script.on_event(defines.events.on_player_created, function(event)
+  local player = game.players[event.player_index]
+  give_tool(player)
 end)

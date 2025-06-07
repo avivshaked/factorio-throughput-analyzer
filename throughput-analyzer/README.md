@@ -7,6 +7,8 @@ This folder contains the actual Factorio mod.
 1. Copy the `throughput-analyzer` directory into your Factorio `mods` folder.
 2. Start the game and enable the mod.
 
+When the mod is active, each player is automatically given the **Throughput Analyzer** tool. Look for it in the *Tools* tab of your inventory.
+
 ## Usage
 
 Select the *Throughput Analyzer* tool from your inventory and drag over an area of machines.
