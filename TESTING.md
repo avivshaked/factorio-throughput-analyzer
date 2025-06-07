@@ -13,7 +13,7 @@ This document outlines how to verify the **Throughput Analyzer** Factorio mod in
 
 ## In‑Game Testing Steps
 1. Start a new game or load an existing save.
-2. Locate the **Throughput Analyzer** tool in your inventory.
+2. Locate the **Throughput Analyzer** tool in your inventory. The mod automatically places one in each player's inventory when it loads.
 3. Select the tool, then drag over a small area containing a few machines, transport belts and inserters.
 4. Upon releasing the mouse button, a window titled **Throughput Analysis** should appear.
 5. Verify the window lists each selected entity with columns for **Name**, **Type**, **Max**, and **Current** values.
