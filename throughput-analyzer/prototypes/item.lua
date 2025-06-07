@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 -- luacheck: globals data
 -- Use a base game icon to avoid shipping a binary placeholder
 local icon_path = "__throughput-analyzer__/graphics/icons/analyzer-icon.png"
