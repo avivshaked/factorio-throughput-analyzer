@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 -- Runtime setting to control verbose debug output
 -- luacheck: globals data
 
