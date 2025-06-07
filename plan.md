@@ -12,7 +12,8 @@
 - [x] On selection, scan entities and compute simple throughput metrics
 - [x] Display results in a basic GUI table
 - [x] Show max vs actual throughput for each entity
-- [x] Switch to built-in icon to avoid binary files in repo
+- [ ] Switch to built-in icon to avoid binary files in repo
+- [ ] Remove custom icon file and reference a base game icon in `item.lua`
 - [ ] Identify and highlight bottlenecks
 - [ ] Incrementally refine analysis logic and GUI
 
