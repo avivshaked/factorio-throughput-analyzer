@@ -12,8 +12,21 @@ local function update_verbose()
   end
 end
 
+local LOG_PREFIX = "[Throughput Analyzer] "
+
 local function debug_log(msg)
-  if verbose then log("[TA] " .. msg) end
+  if verbose then log(LOG_PREFIX .. msg) end
+end
+
+local function safe_string(val)
+  if type(val) == "table" then
+    if game and game.table_to_json then
+      return game.table_to_json(val)
+    else
+      return "[table]"
+    end
+  end
+  return tostring(val)
 end
 
 local function give_tool(player)
@@ -84,11 +97,17 @@ local function analyze_entity(entity)
     result.current = string.format("%.2f", speed * fill_ratio)
   elseif entity.type == "inserter" then
     local rot = entity.prototype.rotation_speed
+    if not rot then
+      -- rotation_speed may be missing on some modded inserters
+      rot = 0
+      debug_log("rotation_speed missing for " .. entity.name)
+    end
     result.max = string.format("%.2f", rot)
     local cur = (entity.held_stack and entity.held_stack.valid_for_read) and rot or 0
     result.current = string.format("%.2f", cur)
   end
-  debug_log(string.format("Result for %s: max=%s current=%s", result.name, result.max, result.current))
+  debug_log(string.format("Result for %s: max=%s current=%s",
+    safe_string(result.name), result.max, result.current))
   return result
 end
 
