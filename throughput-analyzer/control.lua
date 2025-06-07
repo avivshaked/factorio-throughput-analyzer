@@ -1,3 +1,5 @@
+-- luacheck: globals script game defines
+
 local ANALYZER_NAME = "throughput-analyzer-tool"
 
 local function analyze_entity(entity)
@@ -49,7 +51,12 @@ local function show_gui(player, results)
     player.gui.screen.throughput_analyzer_frame.destroy()
   end
 
-  local frame = player.gui.screen.add{type="frame", name="throughput_analyzer_frame", caption="Throughput Analysis", direction="vertical"}
+  local frame = player.gui.screen.add{
+    type = "frame",
+    name = "throughput_analyzer_frame",
+    caption = "Throughput Analysis",
+    direction = "vertical"
+  }
   frame.auto_center = true
 
   local table_elem = frame.add{type="table", column_count=4}
