@@ -12,11 +12,15 @@ data:extend({
     subgroup = "tool",
     order = "c[automated-construction]-a[analyzer]",
     stack_size = 1,
-    selection_color = {r=0, g=1, b=0},
-    alt_selection_color = {r=0, g=1, b=0},
-    selection_mode = {"any-entity"},
-    alt_selection_mode = {"any-entity"},
-    selection_cursor_box_type = "entity",
-    alt_selection_cursor_box_type = "entity"
+    select = {
+      border_color = {0, 1, 0},
+      mode = {"any-entity"},
+      cursor_box_type = "entity"
+    },
+    alt_select = {
+      border_color = {0, 1, 0},
+      mode = {"any-entity"},
+      cursor_box_type = "entity"
+    }
   }
 })
