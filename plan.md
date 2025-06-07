@@ -26,3 +26,10 @@
 - **Iterative updates** allow gradual enhancement of features and accuracy.
 - **Max vs actual throughput** reveals inefficiencies in production.
 - **Built-in icon** avoids storing unsupported binary files.
+
+## Future Plans
+- Implement color-coded overlays for belts and pipes to visualize throughput in-world.
+- Extend analysis to logistic bots, trains, and fluid systems.
+- Provide export options for throughput statistics (e.g., CSV files).
+- Add historical graphs to track performance over time.
+- Allow players to configure bottleneck detection thresholds and alerts.
