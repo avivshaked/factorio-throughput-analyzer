@@ -37,29 +37,12 @@ local function safe_string(val)
   return tostring(val)
 end
 
-local function give_tool(player)
-  if player and player.valid then
-    local inv = player.get_main_inventory()
-    if inv and not inv.find_item_stack(ANALYZER_NAME) then
-      inv.insert{name = ANALYZER_NAME, count = 1}
-    end
-  end
-end
-
-local function give_tool_all_players()
-  for _, p in pairs(game.players) do
-    give_tool(p)
-  end
-end
-
 script.on_init(function()
   update_verbose()
-  give_tool_all_players()
 end)
 
 script.on_configuration_changed(function()
   update_verbose()
-  give_tool_all_players()
 end)
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   if event.setting == "throughput-analyzer-verbose" then
@@ -72,8 +55,8 @@ local function analyze_entity(entity)
   local result = {
     name = entity.localised_name or entity.name,
     type = entity.type,
-    max = "",
-    current = ""
+    max = 0,
+    current = 0
   }
 
   local has_recipe, recipe = pcall(entity.get_recipe, entity)
@@ -84,16 +67,18 @@ local function analyze_entity(entity)
     local working = entity.status == defines.entity_status.working
     for _, product in pairs(recipe.products) do
       local amount = product.amount or ((product.amount_min or 0) + (product.amount_max or 0)) / 2
-      local per_sec = amount * crafts_per_sec
-      table.insert(max_outputs, product.name .. string.format(" %.2f/s", per_sec))
-      local cur = working and per_sec or 0
-      table.insert(current_outputs, product.name .. string.format(" %.2f/s", cur))
+      local per_min = amount * crafts_per_sec * 60
+      table.insert(max_outputs, product.name .. string.format(" %.2f/m", per_min))
+      local cur = working and per_min or 0
+      table.insert(current_outputs, product.name .. string.format(" %.2f/m", cur))
+      result.max = result.max + per_min
+      result.current = result.current + cur
     end
-    result.max = table.concat(max_outputs, ", ")
-    result.current = table.concat(current_outputs, ", ")
+    result.max_text = table.concat(max_outputs, ", ")
+    result.current_text = table.concat(current_outputs, ", ")
   elseif entity.prototype.belt_speed then
     local speed = entity.prototype.belt_speed
-    result.max = string.format("%.2f", speed)
+    result.max = speed * 60
     local count = 0
     if entity.get_transport_line then
       for i = 1, 2 do
@@ -102,7 +87,7 @@ local function analyze_entity(entity)
       end
     end
     local fill_ratio = math.min(count / 16, 1)
-    result.current = string.format("%.2f", speed * fill_ratio)
+    result.current = speed * fill_ratio * 60
   elseif entity.type == "inserter" then
     local rot = entity.prototype.rotation_speed
     if not rot then
@@ -110,9 +95,9 @@ local function analyze_entity(entity)
       rot = 0
       debug_log("rotation_speed missing for " .. entity.name)
     end
-    result.max = string.format("%.2f", rot)
+    result.max = rot * 60
     local cur = (entity.held_stack and entity.held_stack.valid_for_read) and rot or 0
-    result.current = string.format("%.2f", cur)
+    result.current = cur * 60
   end
   debug_log(string.format("Result for %s: max=%s current=%s",
     safe_string(result.name), result.max, result.current))
@@ -133,14 +118,20 @@ local function show_gui(player, results)
   }
   frame.auto_center = true
 
-  local table_elem = frame.add{type="table", column_count=4}
+  local max_height = player.display_resolution.height * player.display_scale - 100
+  local pane = frame.add{type="scroll-pane"}
+  pane.style.maximal_height = max_height
+
+  local table_elem = pane.add{type="table", column_count=5}
   table_elem.add{type="label", caption="Name"}
+  table_elem.add{type="label", caption="Count"}
   table_elem.add{type="label", caption="Type"}
   table_elem.add{type="label", caption="Max"}
   table_elem.add{type="label", caption="Current"}
 
   for _, r in pairs(results) do
     table_elem.add{type="label", caption=r.name}
+    table_elem.add{type="label", caption=tostring(r.count)}
     table_elem.add{type="label", caption=r.type}
     table_elem.add{type="label", caption=r.max}
     table_elem.add{type="label", caption=r.current}
@@ -151,9 +142,24 @@ end
 
 local function analyze_selection(event)
   debug_log("Analyzing selection of " .. #event.entities .. " entities")
-  local results = {}
+  local aggregated = {}
   for _, entity in pairs(event.entities) do
-    table.insert(results, analyze_entity(entity))
+    local r = analyze_entity(entity)
+    local key = r.name
+    local entry = aggregated[key]
+    if not entry then
+      entry = {name = r.name, type = r.type, count = 0, max = 0, current = 0}
+      aggregated[key] = entry
+    end
+    entry.count = entry.count + 1
+    entry.max = entry.max + r.max
+    entry.current = entry.current + r.current
+  end
+  local results = {}
+  for _, entry in pairs(aggregated) do
+    entry.max = string.format("%.2f/m", entry.max)
+    entry.current = string.format("%.2f/m", entry.current)
+    table.insert(results, entry)
   end
   local player = game.players[event.player_index]
   show_gui(player, results)
@@ -176,7 +182,3 @@ script.on_event(defines.events.on_gui_click, function(event)
   end
 end)
 
-script.on_event(defines.events.on_player_created, function(event)
-  local player = game.players[event.player_index]
-  give_tool(player)
-end)
